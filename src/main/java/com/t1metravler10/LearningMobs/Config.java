@@ -1,5 +1,6 @@
 package com.t1metravler10.LearningMobs;
 
+import net.minecraft.ResourceLocationException;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -44,8 +45,16 @@ public class Config {
         if (!(obj instanceof String itemName)) {
             return false;
         }
-        ResourceLocation id = ResourceLocation.tryParse(itemName);
+        ResourceLocation id = parseResourceLocation(itemName);
         return id != null && ForgeRegistries.ITEMS.containsKey(id);
+    }
+
+    private static ResourceLocation parseResourceLocation(String name) {
+        try {
+            return ResourceLocation.parse(name);
+        } catch (ResourceLocationException e) {
+            return null;
+        }
     }
 
     @SubscribeEvent
@@ -55,7 +64,7 @@ public class Config {
         magicNumberIntroduction = MAGIC_NUMBER_INTRODUCTION.get();
 
         items = ITEM_STRINGS.get().stream()
-            .map(ResourceLocation::tryParse)
+            .map(Config::parseResourceLocation)
             .filter(Objects::nonNull)
             .map(ForgeRegistries.ITEMS::getValue)
             .filter(Objects::nonNull)
