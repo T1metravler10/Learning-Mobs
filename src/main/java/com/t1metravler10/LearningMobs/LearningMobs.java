@@ -6,12 +6,8 @@ import com.t1metravler10.LearningMobs.ai.MobGenerationManager;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.monster.Creeper;
-import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.level.LevelEvent;
@@ -23,9 +19,6 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 import org.slf4j.Logger;
 
 @Mod(LearningMobs.MODID)
@@ -33,19 +26,11 @@ public class LearningMobs {
     public static final String MODID = "learningmobs";
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
-
-    public static final RegistryObject<Item> EXAMPLE_ITEM = ITEMS.register("example_item", () -> new Item(new Item.Properties().food(
-            new FoodProperties.Builder().alwaysEdible().nutrition(1).saturationModifier(2f).build()
-    )));
-
     public LearningMobs(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
 
         modEventBus.addListener(this::commonSetup);
-        modEventBus.addListener(this::addCreative);
 
-        ITEMS.register(modEventBus);
         MinecraftForge.EVENT_BUS.register(this);
         context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
@@ -56,11 +41,6 @@ public class LearningMobs {
         LOGGER.info(Config.magicNumberIntroduction + Config.magicNumber);
 
         Config.items.forEach((item) -> LOGGER.info("ITEM >> {}", item.toString()));
-    }
-
-    private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS)
-            event.accept(EXAMPLE_ITEM);
     }
 
     @SubscribeEvent
