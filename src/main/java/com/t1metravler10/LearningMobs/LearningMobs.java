@@ -42,7 +42,7 @@ public class LearningMobs {
     public static final String MODID = "learningmobs";
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    private static final ResourceKey<Registry<CreativeModeTab>> CREATIVE_TAB_KEY = ResourceKey.createRegistryKey(ResourceLocation.withDefaultNamespace("creative_mode_tab"));
+    private static final ResourceKey<Registry<CreativeModeTab>> CREATIVE_TAB_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath("minecraft", "creative_mode_tab"));
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(CREATIVE_TAB_KEY, MODID);
