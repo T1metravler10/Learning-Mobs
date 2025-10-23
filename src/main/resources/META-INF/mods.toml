@@ -1,8 +1,27 @@
+modLoader="javafml"
+loaderVersion="[55,)"
+license="All Rights Reserved"
+
+[[mods]]
 modId="learningmobs"
-version="1.0"
+version="${mod_version}"
 displayName="Learning Mobs"
 authors="T1metravler10"
 description='''
 Adds adaptive AI to Minecraft mobs using neural networks and genetic algorithms.
 Mobs retain their vanilla behaviors but learn over time based on player interaction.
 '''
+
+[[dependencies.learningmobs]]
+modId="forge"
+mandatory=true
+versionRange="[55,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.learningmobs]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.21.5,1.22)"
+ordering="NONE"
+side="BOTH"
