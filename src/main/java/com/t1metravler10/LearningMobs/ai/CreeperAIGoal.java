@@ -43,7 +43,7 @@ public class CreeperAIGoal extends Goal {
             creeper.getHealth() / creeper.getMaxHealth(),
             target.getHealth() / target.getMaxHealth(),
             (creeper.tickCount % 24000) / 24000.0,
-            creeper.level().isDay() ? 1.0 : 0.0
+            creeper.level().isBrightOutside() ? 1.0 : 0.0
         };
 
         double[] outputs = controller.think(inputs);

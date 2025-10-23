@@ -1,11 +1,13 @@
 package com.t1metravler10.LearningMobs.data;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,25 +15,39 @@ import java.util.Objects;
 
 public class LearningMobsWorldData extends SavedData {
     public static final String DATA_NAME = "learning_mobs";
+    private static final Codec<LearningMobsWorldData> CODEC = CompoundTag.CODEC.xmap(
+            LearningMobsWorldData::readNbt,
+            LearningMobsWorldData::writeNbt
+    );
+    public static final SavedDataType<LearningMobsWorldData> TYPE = new SavedDataType<>(
+            DATA_NAME,
+            ctx -> new LearningMobsWorldData(),
+            c -> CODEC,
+            (DataFixTypes) null
+    );
 
     private final Map<ResourceLocation, MobLearningRecord> mobRecords = new HashMap<>();
     private long lastProcessedDay = -1L;
 
     public static LearningMobsWorldData get(ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(LearningMobsWorldData::load, LearningMobsWorldData::new, DATA_NAME);
+        return level.getDataStorage().computeIfAbsent(TYPE);
     }
 
     private LearningMobsWorldData() {
     }
 
-    private static LearningMobsWorldData load(CompoundTag tag) {
+    private static LearningMobsWorldData readNbt(CompoundTag tag) {
         LearningMobsWorldData data = new LearningMobsWorldData();
-        data.lastProcessedDay = tag.getLong("lastProcessedDay");
+        data.lastProcessedDay = tag.getLongOr("lastProcessedDay", -1L);
 
-        ListTag mobsTag = tag.getList("mobs", Tag.TAG_COMPOUND);
-        for (Tag entry : mobsTag) {
-            CompoundTag mobTag = (CompoundTag) entry;
-            ResourceLocation mobId = ResourceLocation.tryParse(mobTag.getString("id"));
+        ListTag mobsTag = tag.getListOrEmpty("mobs");
+        for (int i = 0; i < mobsTag.size(); i++) {
+            CompoundTag mobTag = mobsTag.getCompoundOrEmpty(i);
+            String mobIdString = mobTag.getStringOr("id", "");
+            if (mobIdString.isEmpty()) {
+                continue;
+            }
+            ResourceLocation mobId = ResourceLocation.tryParse(mobIdString);
             if (mobId != null) {
                 MobLearningRecord record = MobLearningRecord.fromNbt(mobTag);
                 data.mobRecords.put(mobId, record);
@@ -40,8 +56,8 @@ public class LearningMobsWorldData extends SavedData {
         return data;
     }
 
-    @Override
-    public CompoundTag save(CompoundTag tag) {
+    private CompoundTag writeNbt() {
+        CompoundTag tag = new CompoundTag();
         tag.putLong("lastProcessedDay", lastProcessedDay);
         ListTag mobsTag = new ListTag();
         for (Map.Entry<ResourceLocation, MobLearningRecord> entry : mobRecords.entrySet()) {

@@ -48,7 +48,7 @@ public class LearningMobs {
     public static final RegistryObject<Item> EXAMPLE_BLOCK_ITEM = ITEMS.register("example_block", () -> new BlockItem(EXAMPLE_BLOCK.get(), new Item.Properties()));
 
     public static final RegistryObject<Item> EXAMPLE_ITEM = ITEMS.register("example_item", () -> new Item(new Item.Properties().food(
-            new FoodProperties.Builder().alwaysEat().nutrition(1).saturationMod(2f).build()
+            new FoodProperties.Builder().alwaysEdible().nutrition(1).saturationModifier(2f).build()
     )));
 
     public static final RegistryObject<CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()

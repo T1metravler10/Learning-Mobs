@@ -3,8 +3,6 @@ package com.t1metravler10.LearningMobs.data;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,18 +83,18 @@ public class MobLearningRecord {
 
     public static MobLearningRecord fromNbt(CompoundTag tag) {
         MobLearningRecord record = new MobLearningRecord();
-        record.inputSize = tag.getInt("inputs");
-        record.outputSize = tag.getInt("outputs");
+        record.inputSize = tag.getIntOr("inputs", 0);
+        record.outputSize = tag.getIntOr("outputs", 0);
 
-        ListTag weightList = tag.getList("weights", Tag.TAG_DOUBLE);
+        ListTag weightList = tag.getListOrEmpty("weights");
         record.weights = new double[weightList.size()];
         for (int i = 0; i < weightList.size(); i++) {
-            record.weights[i] = weightList.getDouble(i);
+            record.weights[i] = weightList.getDoubleOr(i, 0.0);
         }
 
-        ListTag fitnessTag = tag.getList("fitness", Tag.TAG_DOUBLE);
+        ListTag fitnessTag = tag.getListOrEmpty("fitness");
         for (int i = 0; i < fitnessTag.size(); i++) {
-            record.fitnessSamples.add(fitnessTag.getDouble(i));
+            record.fitnessSamples.add(fitnessTag.getDoubleOr(i, 0.0));
         }
         return record;
     }
