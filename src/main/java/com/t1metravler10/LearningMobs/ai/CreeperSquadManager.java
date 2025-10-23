@@ -16,6 +16,9 @@ public class CreeperSquadManager {
     }
 
     public void register(Creeper creeper) {
+        if (creeperToSquad.containsKey(creeper.getUUID())) {
+            return;
+        }
         EvolvingAIController controller = MobGenerationManager.getInstance().assignToMob(creeper);
         if (controller == null) {
             return;

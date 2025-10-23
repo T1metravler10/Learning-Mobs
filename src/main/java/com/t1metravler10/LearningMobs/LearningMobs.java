@@ -1,9 +1,12 @@
 package com.t1metravler10.LearningMobs;
 
+import com.t1metravler10.LearningMobs.ai.CreeperAIGoal;
+import com.t1metravler10.LearningMobs.ai.CreeperSquadManager;
 import com.t1metravler10.LearningMobs.ai.MobGenerationManager;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -17,6 +20,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -100,6 +104,22 @@ public class LearningMobs {
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
         LOGGER.info("HELLO from server starting");
+    }
+
+    @SubscribeEvent
+    public void onEntityJoinLevel(EntityJoinLevelEvent event) {
+        if (!(event.getEntity() instanceof Creeper creeper)) {
+            return;
+        }
+        if (event.getLevel().isClientSide()) {
+            return;
+        }
+        CreeperSquadManager.getInstance().register(creeper);
+        boolean hasGoal = creeper.goalSelector.getAvailableGoals().stream()
+                .anyMatch(wrapper -> wrapper.getGoal() instanceof CreeperAIGoal);
+        if (!hasGoal) {
+            creeper.goalSelector.addGoal(2, new CreeperAIGoal(creeper));
+        }
     }
 
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
