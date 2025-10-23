@@ -50,8 +50,21 @@ public class Config {
     }
 
     private static ResourceLocation parseResourceLocation(String name) {
+        String namespace;
+        String path;
+        int idx = name.indexOf(':');
+        if (idx >= 0) {
+            namespace = name.substring(0, idx);
+            path = name.substring(idx + 1);
+        } else {
+            namespace = ResourceLocation.DEFAULT_NAMESPACE;
+            path = name;
+        }
+        if (path.isEmpty()) {
+            return null;
+        }
         try {
-            return ResourceLocation.parse(name);
+            return ResourceLocation.fromNamespaceAndPath(namespace, path);
         } catch (ResourceLocationException e) {
             return null;
         }
