@@ -38,12 +38,15 @@ public class LearningMobsWorldData extends SavedData {
 
     private static LearningMobsWorldData readNbt(CompoundTag tag) {
         LearningMobsWorldData data = new LearningMobsWorldData();
-        data.lastProcessedDay = tag.getLongOr("lastProcessedDay", -1L);
+        data.lastProcessedDay = tag.getLong("lastProcessedDay").orElse(-1L);
 
-        ListTag mobsTag = tag.getListOrEmpty("mobs");
+        ListTag mobsTag = tag.getList("mobs").orElseGet(ListTag::new);
         for (int i = 0; i < mobsTag.size(); i++) {
-            CompoundTag mobTag = mobsTag.getCompoundOrEmpty(i);
-            String mobIdString = mobTag.getStringOr("id", "");
+            net.minecraft.nbt.Tag entry = mobsTag.get(i);
+            if (!(entry instanceof CompoundTag mobTag)) {
+                continue;
+            }
+            String mobIdString = mobTag.getString("id").orElse("");
             if (mobIdString.isEmpty()) {
                 continue;
             }

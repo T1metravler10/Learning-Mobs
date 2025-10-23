@@ -1,41 +1,84 @@
 package com.t1metravler10.LearningMobs.ai;
 
-import java.util.Random;
-
 public class NeuralNetwork {
-    private double[][] weights;
+    private final int inputSize;
+    private final int outputSize;
+    private final double[] weights;
 
-    public NeuralNetwork(int inputSize, int outputSize) {
-        weights = new double[outputSize][inputSize];
-        Random rand = new Random();
-        for (int i = 0; i < outputSize; i++) {
-            for (int j = 0; j < inputSize; j++) {
-                weights[i][j] = rand.nextDouble() * 2 - 1;
-            }
+    public NeuralNetwork(int inputSize, int outputSize, double[] flatWeights) {
+        if (inputSize <= 0 || outputSize <= 0) {
+            throw new IllegalArgumentException("Input and output sizes must be positive");
         }
+        if (flatWeights.length != inputSize * outputSize) {
+            throw new IllegalArgumentException("Expected " + (inputSize * outputSize) + " weights, got " + flatWeights.length);
+        }
+        this.inputSize = inputSize;
+        this.outputSize = outputSize;
+        this.weights = flatWeights.clone();
+    }
+
+    public int inputSize() {
+        return inputSize;
+    }
+
+    public int outputSize() {
+        return outputSize;
+    }
+
+    public int weightCount() {
+        return weights.length;
     }
 
     public double[] feedForward(double[] inputs) {
-        double[] outputs = new double[weights.length];
-        for (int i = 0; i < weights.length; i++) {
-            double sum = 0;
-            for (int j = 0; j < weights[i].length; j++) {
-                sum += weights[i][j] * inputs[j];
+        if (inputs.length != inputSize) {
+            throw new IllegalArgumentException("Expected " + inputSize + " inputs, got " + inputs.length);
+        }
+        double[] outputs = new double[outputSize];
+        for (int o = 0; o < outputSize; o++) {
+            double sum = 0.0;
+            int offset = o * inputSize;
+            for (int i = 0; i < inputSize; i++) {
+                sum += weights[offset + i] * inputs[i];
             }
-            outputs[i] = sigmoid(sum);
+            outputs[o] = activation(sum);
         }
         return outputs;
     }
 
-    private double sigmoid(double x) {
-        return 1.0 / (1.0 + Math.exp(-x));
+    public double[] weights() {
+        return weights.clone();
     }
 
-    public double[][] getWeights() {
-        return weights;
+    public void setWeights(double[] flat) {
+        if (flat.length != weights.length) {
+            throw new IllegalArgumentException("Expected " + weights.length + " weights");
+        }
+        for (int i = 0; i < weights.length; i++) {
+            weights[i] = sanitize(flat[i]);
+        }
     }
 
-    public void setWeights(double[][] newWeights) {
-        this.weights = newWeights;
+    private static double activation(double value) {
+        // Sigmoid for 0..1 output range.
+        if (value > 30) {
+            return 1.0;
+        }
+        if (value < -30) {
+            return 0.0;
+        }
+        return 1.0 / (1.0 + Math.exp(-value));
+    }
+
+    private static double sanitize(double value) {
+        if (!Double.isFinite(value)) {
+            return 0.0;
+        }
+        if (value > 8.0) {
+            return 8.0;
+        }
+        if (value < -8.0) {
+            return -8.0;
+        }
+        return value;
     }
 }

@@ -1,13 +1,17 @@
 package com.t1metravler10.LearningMobs.ai;
 
-public class EvolvingAIController {
-    private final NeuralNetwork network;
+final class EvolvingAIController {
+    private final MobGenerationManager.AssignedGenome assignment;
 
-    public EvolvingAIController(NeuralNetwork baseNetwork) {
-        this.network = baseNetwork;
+    EvolvingAIController(MobGenerationManager.AssignedGenome assignment) {
+        this.assignment = assignment;
     }
 
-    public double[] think(double[] inputs) {
-        return network.feedForward(inputs);
+    MobGenerationManager.AssignedGenome assignment() {
+        return assignment;
+    }
+
+    double[] evaluate(double[] normalizedInputs) {
+        return assignment.network().feedForward(normalizedInputs);
     }
 }
