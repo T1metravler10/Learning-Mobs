@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[55,)"
+loaderVersion="[61,)"
 license="All Rights Reserved"
 
 [[mods]]
@@ -15,13 +15,13 @@ Mobs retain their vanilla behaviors but learn over time based on player interact
 [[dependencies.learningmobs]]
 modId="forge"
 mandatory=true
-versionRange="[55,)"
+versionRange="[61,)"
 ordering="NONE"
 side="BOTH"
 
 [[dependencies.learningmobs]]
 modId="minecraft"
 mandatory=true
-versionRange="[1.21.5,1.22)"
+versionRange="[1.21.11,1.22)"
 ordering="NONE"
 side="BOTH"
